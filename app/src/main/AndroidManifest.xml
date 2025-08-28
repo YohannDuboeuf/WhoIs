@@ -12,7 +12,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.WhoIs">
         <activity
-            android:name=".SplashActivity"
+            android:name=".activity.SplashActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -20,9 +20,9 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".QuizActivity" />
-        <activity android:name=".EndActivity" />
-        <activity android:name=".MainActivity" />
+        <activity android:name=".activity.QuizActivity" />
+        <activity android:name=".activity.EndActivity" />
+        <activity android:name=".activity.MainActivity" />
     </application>
 
 </manifest>
