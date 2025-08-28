@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="question_image">image de la question</string>
+    <string name="app_name">"Who is ? "</string>
+    <string name="score_text">"Votre score est de : "</string>
+    <string name="bienvenue_dans_le_quiz">"Bienvenue dans Who is ? "</string>
+    <string name="commencer_le_quiz">Commencer le Quiz</string>
+    <string name="replay">Rejouer</string>
+    <string name="slogan">Let\'s make app in Alpes</string>
+</resources>
