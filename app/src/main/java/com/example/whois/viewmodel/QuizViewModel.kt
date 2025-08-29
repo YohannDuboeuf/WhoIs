@@ -16,7 +16,7 @@ class QuizViewModel : ViewModel() {
     val currentQuestionIndex: LiveData<Int> = _currentQuestionIndex
 
     private var _score = 0
-    val score: Int get() = _score // Read-only property for the score
+    val score: Int get() = _score
 
     val isLoading = MutableLiveData(true)
 
@@ -43,7 +43,7 @@ class QuizViewModel : ViewModel() {
     fun checkAnswer(selectedIndex: Int): Boolean {
         val currentQuestion = _questions.value?.get(_currentQuestionIndex.value ?: 0)
         return if (currentQuestion != null && currentQuestion.correctAnswerIndex == selectedIndex) {
-            _score++ // Si la réponse est correcte, incrémente le score
+            _score++
             true
         } else {
             false
@@ -61,13 +61,13 @@ class QuizViewModel : ViewModel() {
         _score = 0
         _isQuizFinished.value = false
         val allQuestions = getQuestions()
-        _questions.value = allQuestions.shuffled().take(5) // Mélange les questions et prend 5
+        _questions.value = allQuestions.shuffled().take(5) // Mélange les questions et en prend 5 au hasard
     }
 
     // Génère une liste de noms aléatoires pour les réponses
     fun getRandomNames(excludedName: String, allNames: List<String>): List<String> {
         val remainingNames = allNames.filter { it != excludedName }
-        return remainingNames.shuffled().take(2)  // Sélectionne 2 noms aléatoires
+        return remainingNames.shuffled().take(2)
     }
 
     // Crée une question avec une image, une réponse correcte et des réponses aléatoires
@@ -97,11 +97,9 @@ class QuizViewModel : ViewModel() {
     fun createQuestion(imageResId: Int, correctName: String, allNames: List<String>): Question {
         val randomNames = getRandomNames(correctName, allNames)
 
-        // Crée une liste des réponses et mélange
         val answers = listOf(correctName) + randomNames
         val shuffledAnswers = answers.shuffled()
 
-        // Trouve l'index de la bonne réponse
         val correctAnswerIndex = shuffledAnswers.indexOf(correctName)
 
         return Question(imageResId, shuffledAnswers, correctAnswerIndex)

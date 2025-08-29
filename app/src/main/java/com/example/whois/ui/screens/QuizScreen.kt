@@ -25,14 +25,12 @@ fun QuizScreen(viewModel: QuizViewModel, onRestartQuiz: () -> Unit) {
     val question = viewModel.questions.value?.getOrNull(questionIndex.value)
     val isQuizFinished = viewModel.isQuizFinished.observeAsState(false)
 
-    // État pour gérer le blur
     var isBlurred by remember { mutableStateOf(true) }
     var isAnswerSelected by remember { mutableStateOf(false) }
 
-    // Réinitialiser isBlurred à true lorsque l'on passe à la question suivante
     LaunchedEffect(questionIndex.value) {
-        isBlurred = true // Réinitialiser le blur au début de chaque question
-        isAnswerSelected = false // Réinitialiser l'état de la réponse
+        isBlurred = true
+        isAnswerSelected = false
     }
 
     if (viewModel.isLoading.value == true) {
@@ -40,10 +38,9 @@ fun QuizScreen(viewModel: QuizViewModel, onRestartQuiz: () -> Unit) {
             CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
         }
     } else if (isQuizFinished.value) {
-        // Affiche l'écran de fin avec le score et le bouton pour redémarrer le quiz
         EndScreen(score = viewModel.getFinalScore(), onRestartQuiz = {
-            viewModel.resetQuiz() // Réinitialiser le quiz
-            onRestartQuiz() // Exécute la fonction pour redémarrer l'activité
+            viewModel.resetQuiz()
+            onRestartQuiz()
         })
     } else if (question != null) {
         Column(

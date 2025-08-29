@@ -46,18 +46,15 @@ val alignYourBodyData = listOf(
 fun Carousel(
     modifier: Modifier = Modifier
 ) {
-    // Créer un état pour gérer la position du LazyRow
     val listState = rememberLazyListState()
 
-    // Démarrer l'effet de défilement infini
     LaunchedEffect(Unit) {
         var currentIndex = 0
         val size = alignYourBodyData.size
 
         // Faire défiler en boucle infinie
         while (true) {
-            // Attendre un petit délai entre les déplacements pour donner l'impression de défilement fluide
-            delay(500) // Ajuster la vitesse du défilement ici
+            delay(500)
 
             listState.animateScrollToItem(currentIndex)
             currentIndex = (currentIndex + 1) % size
@@ -83,7 +80,7 @@ fun AlignYourBodyElement(drawableResId: Int, description: String) {
             painter = painterResource(id = drawableResId),
             contentDescription = description,
             modifier = Modifier
-                .size(160.dp) // Ajuste la taille des images selon ton besoin
+                .size(160.dp)
                 .padding(8.dp)
         )
         Text(

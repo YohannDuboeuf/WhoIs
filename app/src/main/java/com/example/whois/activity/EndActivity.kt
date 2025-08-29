@@ -17,7 +17,7 @@ class EndActivity : ComponentActivity() {
                     onRestartQuiz = {
                         val intent = Intent(this, QuizActivity::class.java)
                         startActivity(intent) // Redémarre l'activité du quiz
-                        finish() // Optionnel, ferme cette activité si nécessaire
+                        finish()
                     }
                 )
             }
