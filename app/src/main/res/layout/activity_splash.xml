@@ -4,14 +4,13 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <!-- Conteneur LinearLayout pour regrouper le texte et l'animation -->
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:layout_centerInParent="true"
         android:gravity="center"
-        android:layout_marginTop="100dp"> <!-- Marge pour ne pas être trop près du haut -->
+        android:layout_marginTop="100dp">
 
         <TextView
             android:id="@+id/textView"
@@ -19,8 +18,9 @@
             android:layout_height="wrap_content"
             android:text="@string/slogan"
             android:textColor="@color/colorPrimary"
-            android:textSize="24sp"
-            android:layout_marginBottom="20dp" /> <!-- Marge entre le texte et l'animation -->
+            android:textSize="30sp"
+            android:layout_marginBottom="20dp"
+            android:fontFamily="@font/poppins_regular" />
 
         <com.airbnb.lottie.LottieAnimationView
             android:id="@+id/animationView"

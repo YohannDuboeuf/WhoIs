@@ -6,15 +6,17 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.whois.viewmodel.QuizViewModel
+import kotlinx.coroutines.delay
 
 @Composable
 fun QuizScreen(viewModel: QuizViewModel, onRestartQuiz: () -> Unit) {
@@ -22,6 +24,16 @@ fun QuizScreen(viewModel: QuizViewModel, onRestartQuiz: () -> Unit) {
     val questionIndex = viewModel.currentQuestionIndex.observeAsState(0)
     val question = viewModel.questions.value?.getOrNull(questionIndex.value)
     val isQuizFinished = viewModel.isQuizFinished.observeAsState(false)
+
+    // État pour gérer le blur
+    var isBlurred by remember { mutableStateOf(true) }
+    var isAnswerSelected by remember { mutableStateOf(false) }
+
+    // Réinitialiser isBlurred à true lorsque l'on passe à la question suivante
+    LaunchedEffect(questionIndex.value) {
+        isBlurred = true // Réinitialiser le blur au début de chaque question
+        isAnswerSelected = false // Réinitialiser l'état de la réponse
+    }
 
     if (viewModel.isLoading.value == true) {
         Box(modifier = Modifier.fillMaxSize()) {
@@ -38,7 +50,8 @@ fun QuizScreen(viewModel: QuizViewModel, onRestartQuiz: () -> Unit) {
             modifier = Modifier
                 .fillMaxSize()
                 .padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
         ) {
             Text(
                 text = "Question ${questionIndex.value + 1}",
@@ -46,16 +59,19 @@ fun QuizScreen(viewModel: QuizViewModel, onRestartQuiz: () -> Unit) {
                 modifier = Modifier.padding(bottom = 16.dp)
             )
 
+            // Applique l'effet de blur sur l'image au début de chaque question
             Image(
                 painter = painterResource(id = question.imageResId),
                 contentDescription = "Question Image",
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp)
+                    .blur(radius = if (isBlurred) 8.dp else 0.dp)
             )
 
             Spacer(modifier = Modifier.height(16.dp))
 
+            // Affichage des options de réponse
             question.options.forEachIndexed { index, option ->
                 Button(
                     onClick = {
@@ -68,14 +84,22 @@ fun QuizScreen(viewModel: QuizViewModel, onRestartQuiz: () -> Unit) {
 
                         Toast.makeText(context, "$resultMessage: $option", Toast.LENGTH_SHORT).show()
 
-                        // Passe à la question suivante
-                        viewModel.moveToNextQuestion()
+                        isBlurred = false
+                        isAnswerSelected = true
                     },
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = 8.dp)
                 ) {
                     Text(text = option)
+                }
+            }
+
+            LaunchedEffect(isAnswerSelected) {
+                if (isAnswerSelected) {
+                    delay(2000)
+                    viewModel.moveToNextQuestion()
+                    isAnswerSelected = false // reset l'état de blur
                 }
             }
         }
