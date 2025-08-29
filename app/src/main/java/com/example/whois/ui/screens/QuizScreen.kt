@@ -7,6 +7,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -16,14 +17,22 @@ import androidx.compose.ui.unit.sp
 import com.example.whois.viewmodel.QuizViewModel
 
 @Composable
-fun QuizScreen(viewModel: QuizViewModel) {
+fun QuizScreen(viewModel: QuizViewModel, onRestartQuiz: () -> Unit) {
     val context = LocalContext.current
-    val question = viewModel.questions.value?.getOrNull(viewModel.currentQuestionIndex)
+    val questionIndex = viewModel.currentQuestionIndex.observeAsState(0)
+    val question = viewModel.questions.value?.getOrNull(questionIndex.value)
+    val isQuizFinished = viewModel.isQuizFinished.observeAsState(false)
 
     if (viewModel.isLoading.value == true) {
         Box(modifier = Modifier.fillMaxSize()) {
             CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
         }
+    } else if (isQuizFinished.value) {
+        // Affiche l'écran de fin avec le score et le bouton pour redémarrer le quiz
+        EndScreen(score = viewModel.getFinalScore(), onRestartQuiz = {
+            viewModel.resetQuiz() // Réinitialiser le quiz
+            onRestartQuiz() // Exécute la fonction pour redémarrer l'activité
+        })
     } else if (question != null) {
         Column(
             modifier = Modifier
@@ -32,7 +41,7 @@ fun QuizScreen(viewModel: QuizViewModel) {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = "Question ${viewModel.currentQuestionIndex + 1}",
+                text = "Question ${questionIndex.value + 1}",
                 fontSize = 24.sp,
                 modifier = Modifier.padding(bottom = 16.dp)
             )
@@ -59,11 +68,8 @@ fun QuizScreen(viewModel: QuizViewModel) {
 
                         Toast.makeText(context, "$resultMessage: $option", Toast.LENGTH_SHORT).show()
 
-                        if (viewModel.currentQuestionIndex < 4) {
-                            viewModel.moveToNextQuestion()
-                        } else {
-                            Toast.makeText(context, "Fin du quiz", Toast.LENGTH_SHORT).show()
-                        }
+                        // Passe à la question suivante
+                        viewModel.moveToNextQuestion()
                     },
                     modifier = Modifier
                         .fillMaxWidth()

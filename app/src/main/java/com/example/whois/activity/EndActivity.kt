@@ -12,7 +12,14 @@ class EndActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             WhoIsTheme {
-                EndScreen(score = intent.getIntExtra("SCORE", 0)) // Passer le score à l'écran de fin
+                EndScreen(
+                    score = intent.getIntExtra("SCORE", 0),
+                    onRestartQuiz = {
+                        val intent = Intent(this, QuizActivity::class.java)
+                        startActivity(intent) // Redémarre l'activité du quiz
+                        finish() // Optionnel, ferme cette activité si nécessaire
+                    }
+                )
             }
         }
     }

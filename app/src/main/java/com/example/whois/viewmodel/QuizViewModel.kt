@@ -12,47 +12,65 @@ class QuizViewModel : ViewModel() {
     private val _questions = MutableLiveData<List<Question>>()
     val questions: LiveData<List<Question>> = _questions
 
-    var currentQuestionIndex = 0
-    var score = 0
+    private val _currentQuestionIndex = MutableLiveData(0)
+    val currentQuestionIndex: LiveData<Int> = _currentQuestionIndex
+
+    private var _score = 0
+    val score: Int get() = _score // Read-only property for the score
 
     val isLoading = MutableLiveData(true)
 
+    private val _isQuizFinished = MutableLiveData(false) // Nouvel état pour savoir si le quiz est terminé
+    val isQuizFinished: LiveData<Boolean> = _isQuizFinished
+
     init {
         val allQuestions = getQuestions()
-        _questions.value = allQuestions.shuffled().take(5) // Mélanger et sélectionner 5 questions
-        isLoading.value = false // Fin du chargement
+        _questions.value = allQuestions.shuffled().take(5) // Mélange les questions et prend 5
+        isLoading.value = false
     }
 
+    // Fonction pour passer à la question suivante
     fun moveToNextQuestion() {
-        if (currentQuestionIndex < (_questions.value?.size?.minus(1) ?: 0)) {
-            currentQuestionIndex++  // Incrémenter l'index pour passer à la question suivante
+        val currentIndex = _currentQuestionIndex.value ?: 0
+        if (currentIndex < (_questions.value?.size?.minus(1) ?: 0)) {
+            _currentQuestionIndex.value = currentIndex + 1
         } else {
-            // Fin du quiz
+            _isQuizFinished.value = true // Le quiz est terminé
         }
     }
 
+    // Fonction pour vérifier si la réponse sélectionnée est correcte
     fun checkAnswer(selectedIndex: Int): Boolean {
-        val currentQuestion = _questions.value?.get(currentQuestionIndex)
-
-        Log.d("QuizViewModel", "Question ${currentQuestion?.correctAnswerIndex}, Selected: $selectedIndex")
-
+        val currentQuestion = _questions.value?.get(_currentQuestionIndex.value ?: 0)
         return if (currentQuestion != null && currentQuestion.correctAnswerIndex == selectedIndex) {
-            score++
+            _score++ // Si la réponse est correcte, incrémente le score
             true
         } else {
             false
         }
     }
 
+    // Retourne le score final
     fun getFinalScore(): Int {
-        return score
+        return _score
     }
 
+    // Réinitialiser le quiz pour recommencer
+    fun resetQuiz() {
+        _currentQuestionIndex.value = 0
+        _score = 0
+        _isQuizFinished.value = false
+        val allQuestions = getQuestions()
+        _questions.value = allQuestions.shuffled().take(5) // Mélange les questions et prend 5
+    }
+
+    // Génère une liste de noms aléatoires pour les réponses
     fun getRandomNames(excludedName: String, allNames: List<String>): List<String> {
         val remainingNames = allNames.filter { it != excludedName }
-        return remainingNames.shuffled().take(2)
+        return remainingNames.shuffled().take(2)  // Sélectionne 2 noms aléatoires
     }
 
+    // Crée une question avec une image, une réponse correcte et des réponses aléatoires
     fun getQuestions(): List<Question> {
         val allNames = listOf("Benoit", "Quentin", "Flo", "Remi", "Nico", "Martin", "Jude", "Jeremy", "Hugo", "Francois", "Denis", "Coline")
 
@@ -75,12 +93,15 @@ class QuizViewModel : ViewModel() {
         )
     }
 
+    // Crée une question avec une image, un nom correct et une liste de réponses mélangées
     fun createQuestion(imageResId: Int, correctName: String, allNames: List<String>): Question {
         val randomNames = getRandomNames(correctName, allNames)
 
+        // Crée une liste des réponses et mélange
         val answers = listOf(correctName) + randomNames
         val shuffledAnswers = answers.shuffled()
 
+        // Trouve l'index de la bonne réponse
         val correctAnswerIndex = shuffledAnswers.indexOf(correctName)
 
         return Question(imageResId, shuffledAnswers, correctAnswerIndex)

@@ -11,6 +11,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.sp
 import com.example.whois.activity.QuizActivity
+import com.example.whois.ui.components.Carousel
 import com.example.whois.ui.components.CustomButton
 
 @Composable
@@ -22,9 +23,11 @@ fun MainScreen() {
             .fillMaxSize()
             .padding(50.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Bottom
+        verticalArrangement = Arrangement.Center
     ) {
-        Text(text = "Bienvenue dans le quiz", fontSize = 24.sp)
+        Text(text = "Bienvenue dans Who Is ?", fontSize = 24.sp)
+        Spacer(modifier = Modifier.height(16.dp))
+        Carousel(modifier = Modifier.fillMaxWidth())
         Spacer(modifier = Modifier.height(16.dp))
         CustomButton(text = "Commencer le quiz") {
             context.startActivity(Intent(context, QuizActivity::class.java))

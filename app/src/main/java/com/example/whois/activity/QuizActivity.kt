@@ -15,7 +15,17 @@ class QuizActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             WhoIsTheme {
-                QuizScreen(viewModel) // Passer le ViewModel à l'écran de quiz
+                // Passe la fonction onRestartQuiz à QuizScreen
+                QuizScreen(viewModel) {
+                    // Appelle resetQuiz dans le ViewModel pour réinitialiser le quiz
+                    viewModel.resetQuiz()
+                    // Redémarre l'UI avec l'état réinitialisé
+                    setContent {
+                        WhoIsTheme {
+                            QuizScreen(viewModel) { }
+                        }
+                    }
+                }
             }
         }
     }

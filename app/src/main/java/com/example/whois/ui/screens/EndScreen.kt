@@ -1,6 +1,5 @@
 package com.example.whois.ui.screens
 
-import android.content.Intent
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
@@ -13,7 +12,7 @@ import androidx.compose.ui.unit.sp
 import com.example.whois.activity.QuizActivity
 
 @Composable
-fun EndScreen(score: Int) {
+fun EndScreen(score: Int, onRestartQuiz: () -> Unit) {
     val context = LocalContext.current
 
     Column(
@@ -26,7 +25,7 @@ fun EndScreen(score: Int) {
         Text(text = "Score: $score/5", fontSize = 28.sp)
         Spacer(modifier = Modifier.height(40.dp))
         Button(onClick = {
-            context.startActivity(Intent(context, QuizActivity::class.java))
+            onRestartQuiz() // reload le Quiz
         }) {
             Text(text = "Rejouer")
         }
